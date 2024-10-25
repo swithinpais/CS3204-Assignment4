@@ -98,8 +98,6 @@ def main() -> None:
 
     ns = [2, 3, 5, 10, 50, 100, 200, 500, 1000, 1500, 2000]
 
-    ns = [2, 3, 5, 10, 50]
-
     times = get_times(ns, A, B)
 
     logging.info("-"*12 + "TIMES" + "-"*12)
