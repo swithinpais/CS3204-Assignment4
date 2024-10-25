@@ -2,6 +2,7 @@ import timeit
 import random
 import logging
 import sys
+import json
 
 number = int | float
 
@@ -100,10 +101,15 @@ def main() -> None:
 
     times = get_times(ns, A, B)
 
-    logging.info("-"*12 + "TIMES" + "-"*12)
-    for (n, t) in zip(ns, times, strict=True):
+    d = {n: t for (n, t) in zip(ns, times, strict=True)}
 
+    logging.info("-"*12 + "TIMES" + "-"*12)
+
+    for (n, t) in d.items():
         logging.info(f"Size {n} * {n} took:\t{t:.5}")
+
+    with open("data.json", "w") as f:
+        json.dump(d, f)
 
 
 if __name__ == "__main__":
