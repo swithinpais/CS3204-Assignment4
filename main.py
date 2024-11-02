@@ -3,6 +3,13 @@ import random
 import logging
 import sys
 import json
+import time
+import os
+
+import matplotlib.pyplot as plt
+
+FILENAME = f"{str(time.time())}.png"
+LOGGER = logging.getLogger()
 
 number = int | float
 
@@ -55,11 +62,33 @@ def create_random_square_matrix(n: int, a: int, b: int) -> list[list[int]]:
     return [[random.randint(a, b) for _ in range(n)] for _ in range(n)]
 
 
-def set_logging():
-    if "--debug" in sys.argv:
-        logging.basicConfig(level=logging.DEBUG)
-        return
-    logging.basicConfig(level=logging.INFO)
+def setup() -> list[int]:
+
+    ns = [2, 3, 5, 10, 20, 30, 50, 80, 100, 120, 150, 180, 200]
+    level = logging.INFO
+
+    for arg in sys.argv:
+        print(arg)
+        if arg == "--debug":
+            level = logging.DEBUG
+
+            ns = [2, 3, 5, 10, 20, 30]
+        elif "-filename=" in arg:
+            file, ext = os.path.splitext(arg.split("-filename=")[-1])
+
+            if not file:
+                raise ValueError("Filename cannot be empty")
+
+            if not ext:
+                ext = ".png"
+
+            global FILENAME
+            FILENAME = file + ext
+
+    logging.basicConfig(level=level)
+    logging.getLogger("matplotlib").setLevel(logging.WARNING)
+    logging.getLogger("PIL").setLevel(logging.WARNING)
+    return ns
 
 
 def get_times(ns: list[int], A: int, B: int, number: int = 1000) -> list[float]:
@@ -90,6 +119,17 @@ def get_times(ns: list[int], A: int, B: int, number: int = 1000) -> list[float]:
     return times
 
 
+def plot_data(data: dict[int, float]) -> None:
+    plt.plot(data.keys(), data.values())
+    plt.plot(data.keys(), data.values(), "r.")
+    plt.title("Time (s) vs N")
+    plt.xlabel("N")
+    plt.ylabel("Time (s)")
+
+    plt.show()
+    plt.savefig(f"plots/{FILENAME}")
+
+
 def process_data(ns: list[int], times: list[float]) -> dict[int, float]:
     d = dict(zip(ns, times, strict=True))
 
@@ -106,16 +146,16 @@ def process_data(ns: list[int], times: list[float]) -> dict[int, float]:
 
 def main() -> None:
 
-    set_logging()
+    ns = setup()
 
     A, B = 0, 100
     random.seed(0)
 
-    ns = [2, 3, 5, 10, 20, 30, 50, 80, 100, 120, 150, 180, 200]
-
     times = get_times(ns, A, B)
 
     d = process_data(ns, times)
+
+    plot_data(d)
 
 
 if __name__ == "__main__":
