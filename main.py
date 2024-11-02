@@ -90,6 +90,20 @@ def get_times(ns: list[int], A: int, B: int, number: int = 1000) -> list[float]:
     return times
 
 
+def process_data(ns: list[int], times: list[float]) -> dict[int, float]:
+    d = dict(zip(ns, times, strict=True))
+
+    logging.info("-"*12 + "TIMES" + "-"*12)
+
+    for (n, t) in d.items():
+        logging.info(f"Size {n} * {n} took:\t{t:.5}")
+
+    with open("data.json", "w") as f:
+        json.dump(d, f)
+
+    return d
+
+
 def main() -> None:
 
     set_logging()
@@ -101,15 +115,7 @@ def main() -> None:
 
     times = get_times(ns, A, B)
 
-    d = {n: t for (n, t) in zip(ns, times, strict=True)}
-
-    logging.info("-"*12 + "TIMES" + "-"*12)
-
-    for (n, t) in d.items():
-        logging.info(f"Size {n} * {n} took:\t{t:.5}")
-
-    with open("data.json", "w") as f:
-        json.dump(d, f)
+    d = process_data(ns, times)
 
 
 if __name__ == "__main__":
