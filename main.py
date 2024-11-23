@@ -126,7 +126,6 @@ def plot_data(data: dict[int, float]) -> None:
     plt.xlabel("N")
     plt.ylabel("Time (s)")
 
-    plt.show()
     plt.savefig(f"plots/{FILENAME}")
 
 
